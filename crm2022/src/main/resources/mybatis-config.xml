@@ -9,10 +9,10 @@
     </settings>
 <!--    注册pojo别名-->
     <typeAliases>
-        <package name="com.bjpowernode.crm.model"/>
+        <package name="com.bjpowernode.crm.settings.domain"/>
     </typeAliases>
 <!--    批量注册mapper-->
     <mappers>
-        <package name="com.bjpowernode.crm.mapper"/>
+        <package name="com.bjpowernode.crm.settings.mapper"/>
     </mappers>
 </configuration>
