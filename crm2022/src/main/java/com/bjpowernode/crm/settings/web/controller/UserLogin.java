@@ -83,4 +83,23 @@ public class UserLogin {
         }
         return returnObject;
     }
+
+    @RequestMapping("/settings/qx/user/logout.do")
+    public String logout(HttpServletResponse response, HttpSession session) {
+
+        // 删除cookie
+        Cookie cookieLoginAct = new Cookie("loginAct", "0");
+        Cookie cookieLoginPwd = new Cookie("loginPwd", "0");
+        cookieLoginAct.setMaxAge(0);
+        cookieLoginPwd.setMaxAge(0);
+        response.addCookie(cookieLoginAct);
+        response.addCookie(cookieLoginPwd);
+
+        // 删除会话
+        session.invalidate();
+
+        //跳转到首页
+        return "redirect:/";
+    }
+
 }
