@@ -31,7 +31,7 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
   </listener>
 
 
-  <!-- Spring mvc分发servlet -->
+  <!-- Spring mvc核心servlet -->
   <servlet>
     <servlet-name>dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -45,10 +45,7 @@ http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-<!--  <servlet-mapping>-->
-<!--    <servlet-name>dispatcher</servlet-name>-->
-<!--    <url-pattern>*.do</url-pattern>-->
-<!--  </servlet-mapping>-->
+
   <!-- 欢迎页，默认进入index controller -->
   <welcome-file-list>
     <welcome-file>/</welcome-file>

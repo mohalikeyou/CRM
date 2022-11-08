@@ -225,4 +225,13 @@
       edit_by = #{editBy,jdbcType=VARCHAR}
     where id = #{id,jdbcType=CHAR}
   </update>
+
+    <!--  通过账号密码查询用户
+    User selectUserByLoginActAndPwd(Map map);-->
+  <select id="selectUserByLoginActAndPwd" parameterType="map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from tbl_user
+    where login_act = #{loginAct} and login_pwd = #{loginPwd}
+  </select>
 </mapper>

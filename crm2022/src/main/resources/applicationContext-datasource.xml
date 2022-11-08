@@ -9,6 +9,7 @@
       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
+<!--    读取JDBC属性配置文件-->
     <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
 
     <!-- 配置数据源 -->
@@ -19,17 +20,22 @@
         <property name="url" value="${jdbc.url}"/>
     </bean>
 
+<!--    配置生产动态代理对象的工厂-->
     <!-- 配置SqlSessionFactory -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!-- 必须注入属性dataSource -->
         <property name="dataSource" ref="dataSource"/>
         <!-- 如果mybatis没有特殊的配置(比如别名等)，configLocation可以省去 ;否则，不能省略-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- 批量注册pojo别名-->
+        <property name="typeAliasesPackage" value="com.bjpowernode.crm.settings.domain"></property>
     </bean>
 
 
     <!-- mapper注解扫描器配置,扫描@MapperScan注解,自动生成代码对象 -->
+
     <bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 批量注册 mapper-->
         <property name="basePackage" value="com.bjpowernode.crm.settings.mapper"/>
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
