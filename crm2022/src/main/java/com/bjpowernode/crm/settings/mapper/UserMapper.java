@@ -2,6 +2,7 @@ package com.bjpowernode.crm.settings.mapper;
 
 import com.bjpowernode.crm.settings.domain.User;
 
+import java.util.List;
 import java.util.Map;
 
 public interface UserMapper {
@@ -54,8 +55,15 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     /**
-     * 此方法
-     * @Yao
+     * 此方法根据账户密码判断登录是否正确
+     * @author yao
      */
     User selectUserByLoginActAndPwd(Map<String, Object> map);
+
+    /**
+     * 此方法，查询所有用户
+     * @author yao
+     */
+    List<User> selectAllUsers();
+
 }

@@ -1,22 +1,97 @@
-<!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+String base = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath() + "/";
+%>
 <html>
 <head>
+	<base href = "<%=base%>">
 <meta charset="UTF-8">
-
-<link href="../../jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-<link href="../../jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
-
-<script type="text/javascript" src="../../jquery/jquery-1.11.1-min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
-<script type="text/javascript" src="../../jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
+<%--	jQuery的JS文件--%>
+<script type="text/javascript" src="jquery/jquery-1.11.1-min.js"></script>
+<%--	bootstrap框架的CSS和JS文件--%>
+<link href="jquery/bootstrap_3.3.0/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="jquery/bootstrap_3.3.0/js/bootstrap.min.js"></script>
+<%--	bootstrap 日历插件的 CSS 和 JS 文件--%>
+<link href="jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
 <script type="text/javascript">
 
 	$(function(){
-		
-		
-		
+
+
+		// 为创建市场活动添加单击事件（模态窗口弹出）
+		$("#createActivityBtn").on("click", function () {
+			// 重置表单
+			$("#createActivityForm").get(0).reset()
+			$("#createActivityModal").modal("show")
+		})
+
+		$("#saveCreateActivityBtn").on("click", function () {
+			// 表单验证
+			var owner = $("#create-marketActivityOwner").val()
+			var name = $("#create-marketActivityName").val()
+			var startDate = $("#create-startDate").val()
+			var endDate = $("#create-endDate").val()
+			var cost = $("#create-cost").val()
+			var description = $("#create-describe").val()
+
+			if (owner == "") {
+				alert("活动所有者不能为空")
+				return
+			}
+			if (name == "") {
+				alert("活动名称不能为空！")
+				return
+			}
+			if (startDate != "" && endDate != "") {
+				if (startDate > endDate) {
+					alert("结束日期不能早于开始日期")
+					return
+				}
+			}
+			var regx = /^[1-9]\d*$/
+			if (!regx.test(cost)) {
+				alert("代价必须为非负整数")
+				return
+			}
+
+			$.ajax({
+				data: {
+					owner: owner,
+					name: name,
+					startDate: startDate,
+					endDate: endDate,
+					cost: cost,
+					description: description
+				},
+				url: "workbench/activity/save.do",
+				dataType: "json",
+				type: "post",
+				success: function (data) {
+					if (data.code == "1") {
+						$("#createActivityModal").modal("hide")
+					} else {
+						alert(data.message)
+						$("#createActivityModal").modal("show")
+					}
+				}
+			})
+		})
+
+		// 为开始日期和结束日期设置日历视图
+		$(".mydate").datetimepicker({
+			language: "zh-CN", // 中文
+			format: "yyyy-mm-dd", // 保存的日期格式串
+			minView: "month", // 可以选择的最小视图
+			initialDate: new Date(), // 默认的日期
+			autoclose: true, // 自动关闭
+			todayBtn: true, // 显示“今天”按钮
+			clearBtn: true // 显示清空按钮
+		})
+
 	});
 	
 </script>
@@ -35,15 +110,15 @@
 				</div>
 				<div class="modal-body">
 				
-					<form class="form-horizontal" role="form">
+					<form id = "createActivityForm" class="form-horizontal" role="form">
 					
 						<div class="form-group">
 							<label for="create-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="create-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+									<c:forEach var="user" items="${requestScope.userList}">
+										<option value="${user.id}">${user.name}</option>
+									</c:forEach>
 								</select>
 							</div>
                             <label for="create-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
@@ -53,13 +128,13 @@
 						</div>
 						
 						<div class="form-group">
-							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
+							<label for="create-startDate" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control mydate" id="create-startDate" readonly>
 							</div>
-							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
+							<label for="create-endDate" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text" class="form-control mydate" id="create-endDate" readonly>
 							</div>
 						</div>
                         <div class="form-group">
@@ -81,7 +156,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" id = "saveCreateActivityBtn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -105,9 +180,9 @@
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="edit-marketActivityOwner">
-								  <option>zhangsan</option>
-								  <option>lisi</option>
-								  <option>wangwu</option>
+									<c:forEach var="user" items="${requestScope.userList}">
+										<option value="${user.id}">${user.name}</option>
+									</c:forEach>
 								</select>
 							</div>
                             <label for="edit-marketActivityName" class="col-sm-2 control-label">名称<span style="font-size: 15px; color: red;">*</span></label>
@@ -238,7 +313,7 @@
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建</button>
+				  <button type="button" class="btn btn-primary" id = "createActivityBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
