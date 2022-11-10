@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ActivityController {
@@ -37,7 +39,7 @@ public class ActivityController {
     @RequestMapping("/workbench/activity/save.do")
     public @ResponseBody Object save(Activity activity, HttpSession session) {
         User user = (User) (session.getAttribute(Constants.SESSION_USER));
-        activity.setCreateBy(user.getName());
+        activity.setCreateBy(user.getId()); // 我们要保存创建者的ID（因为名字可能会重名）
         activity.setCreateTime(DateUtils.formatDateTime(new Date()));
         activity.setId(UUIDUtils.getUUID());
 
@@ -57,5 +59,24 @@ public class ActivityController {
             e.printStackTrace();
         }
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/queryActivitiesByConditionsForPage.do")
+    public @ResponseBody Object  queryActivitiesByConditionsForPage(String name, String owner, String startDate, String endDate, int pageNo, int pageSize) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("name", name);
+        paramMap.put("owner", owner);
+        paramMap.put("startDate", startDate);
+        paramMap.put("endDate", endDate);
+        paramMap.put("beginNo", (pageNo - 1) * pageSize);
+        paramMap.put("pageSize", pageSize);
+
+        List<Activity> activitiesList = activityService.queryActivitiesByConditionsForPage(paramMap);
+        int totalRows = activityService.queryCountOfActivitiesByConditions(paramMap);
+
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("activitiesList", activitiesList);
+        returnMap.put("totalRows", totalRows);
+        return returnMap;
     }
 }

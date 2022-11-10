@@ -29,6 +29,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			$("#createActivityModal").modal("show")
 		})
 
+		// 保存市场活动信息
 		$("#saveCreateActivityBtn").on("click", function () {
 			// 表单验证
 			var owner = $("#create-marketActivityOwner").val()
@@ -92,7 +93,65 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			clearBtn: true // 显示清空按钮
 		})
 
+		// 点击页面时，加载一次市场活动
+		queryAllActivities()
+
+		// 为查询按钮添加单击事件（条件查询）
+		$("#queryActivitiesByConditionsBtn").on("click", function () {
+			// 判断日期输入正确
+			var startDate = $("#query-startDate").val()
+			var endDate = $("#query-endDate").val()
+			if (startDate != '' && endDate != '' && startDate > endDate ) {
+				alert("开始日期不能大于结束日期！")
+				return
+			}
+			queryAllActivities()
+		})
+
+		// 为条件查询中，”开始日期“，和”结束日期“添加单击事件;
+
 	});
+
+	// 为市场活动主页加载数据的函数
+	queryAllActivities = function () {
+		var name = $("#query-name").val()
+		var owner = $("#query-owner").val()
+		var startDate = $("#query-startDate").val()
+		var endDate = $("#query-endDate").val();
+		var pageNo = 1
+		var pageSize = 10
+
+		$.ajax({
+			url: "workbench/activity/queryActivitiesByConditionsForPage.do",
+			data: {
+				name: name,
+				owner: owner,
+				startDate: startDate,
+				endDate: endDate,
+				pageNo: pageNo,
+				pageSize: pageSize
+			},
+			dataType: "json",
+			type: "post",
+			success: function (data) {
+				$("#totalRowsB").text(data.totalRows) // 显示总条数
+1
+				var tbodystr = ""
+				$.each(data.activitiesList, function (index, obj) {
+					tbodystr += "<tr class=\"active\">"
+					tbodystr += "	<td><input type=\"checkbox\" value = \" "+ obj.id + "\"/></td> "
+					tbodystr += "	<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.html';\">" + obj.name+ "</a></td>"
+					tbodystr += "	<td>" +obj.owner+ "</td>"
+					tbodystr += "	<td>" + obj.startDate+ "</td>"
+					tbodystr += "	<td>" + obj.endDate+ "</td>"
+					tbodystr += "</tr>"
+				})
+				$("#tbody").html(tbodystr)
+			}
+		})
+	}
+
+
 	
 </script>
 </head>
@@ -282,14 +341,14 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">名称</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id = "query-name">
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">所有者</div>
-				      <input class="form-control" type="text">
+				      <input class="form-control" type="text" id = "query-owner">
 				    </div>
 				  </div>
 
@@ -297,17 +356,17 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" />
+					  <input class="form-control mydate" type="text" id="query-startDate" readonly/>
 				    </div>
 				  </div>
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input class="form-control mydate" type="text" id="query-endDate" readonly>
 				    </div>
 				  </div>
 				  
-				  <button type="submit" class="btn btn-default">查询</button>
+				  <button type="button" class="btn btn-default" id = "queryActivitiesByConditionsBtn">查询</button>
 				  
 				</form>
 			</div>
@@ -334,28 +393,28 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 							<td>结束日期</td>
 						</tr>
 					</thead>
-					<tbody>
-						<tr class="active">
-							<td><input type="checkbox" /></td>
-							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
-                            <td>zhangsan</td>
-							<td>2020-10-10</td>
-							<td>2020-10-20</td>
-						</tr>
-                        <tr class="active">
-                            <td><input type="checkbox" /></td>
-                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>
-                            <td>zhangsan</td>
-                            <td>2020-10-10</td>
-                            <td>2020-10-20</td>
-                        </tr>
+					<tbody id = "tbody">
+<%--						<tr class="active">--%>
+<%--							<td><input type="checkbox" /></td>--%>
+<%--							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>--%>
+<%--                            <td>zhangsan</td>--%>
+<%--							<td>2020-10-10</td>--%>
+<%--							<td>2020-10-20</td>--%>
+<%--						</tr>--%>
+<%--                        <tr class="active">--%>
+<%--                            <td><input type="checkbox" /></td>--%>
+<%--                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>--%>
+<%--                            <td>zhangsan</td>--%>
+<%--                            <td>2020-10-10</td>--%>
+<%--                            <td>2020-10-20</td>--%>
+<%--                        </tr>--%>
 					</tbody>
 				</table>
 			</div>
 			
 			<div style="height: 50px; position: relative;top: 30px;">
 				<div>
-					<button type="button" class="btn btn-default" style="cursor: default;">共<b>50</b>条记录</button>
+					<button type="button" class="btn btn-default" style="cursor: default;">共<b id = "totalRowsB">50</b>条记录</button>
 				</div>
 				<div class="btn-group" style="position: relative;top: -34px; left: 110px;">
 					<button type="button" class="btn btn-default" style="cursor: default;">显示</button>
