@@ -88,7 +88,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			})
 		})
 
-		// 为开始日期和结束日期设置日历视图
+		// 为开始日期和结束日期(包括条件查询所在的开日和结束)设置日历视图
 		$(".mydate").datetimepicker({
 			language: "zh-CN", // 中文
 			format: "yyyy-mm-dd", // 保存的日期格式串
@@ -114,7 +114,19 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			queryAllActivities(1, $("#activityPagination").bs_pagination('getOption', 'rowsPerPage'))
 		})
 
-		// 为条件查询中，”开始日期“，和”结束日期“添加单击事件;
+		// 为活动的全选按钮添加单击事件
+		$("#checkAll").on("click", function () {
+			$("#tbody input[type='checkbox']").prop("checked", this.checked)
+		})
+
+		// 为tbody中的所有checkbox添加单击事件！(这些checkbox为动态元素)
+		$("#tbody").on("click", "input[type='checkbox']", function () {
+			if ($("#tbody input[type='checkbox']").size() == $("#tbody input[type='checkbox']:checked").size()) {
+				$("#checkAll").prop("checked", true)
+			} else {
+				$("#checkAll").prop("checked", false)
+			}
+		})
 
 	});
 
@@ -151,6 +163,9 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 					tbodystr += "</tr>"
 				})
 				$("#tbody").html(tbodystr)
+
+				// 将全选按钮随着翻页自动取消
+				$("#checkAll").prop("checked", false)
 
 				// 使用分页插线，显示下方的翻页框
 				var totalPages = parseInt(data.totalRows / pageSize)
@@ -411,7 +426,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				<table class="table table-hover">
 					<thead>
 						<tr style="color: #B3B3B3;">
-							<td><input type="checkbox" /></td>
+							<td><input type="checkbox" id="checkAll"/></td>
 							<td>名称</td>
                             <td>所有者</td>
 							<td>开始日期</td>
