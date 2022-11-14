@@ -65,4 +65,10 @@ public interface ActivityMapper {
      * @author yao
      */
     int selectCountOfActivitiesByConditions(Map<String, Object> map);
+
+    /**
+     * @author yao
+     * 按照id列表删除市场活动
+     */
+    int deleteActivitiesByIds(String[] ids);
 }

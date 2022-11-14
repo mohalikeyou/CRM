@@ -107,7 +107,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			// 判断日期输入正确
 			var startDate = $("#query-startDate").val()
 			var endDate = $("#query-endDate").val()
-			if (startDate != '' && endDate != '' && startDate > endDate ) {
+			if (startDate !== '' && endDate !== '' && startDate > endDate ) {
 				alert("开始日期不能大于结束日期！")
 				return
 			}
@@ -121,13 +121,45 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 
 		// 为tbody中的所有checkbox添加单击事件！(这些checkbox为动态元素)
 		$("#tbody").on("click", "input[type='checkbox']", function () {
-			if ($("#tbody input[type='checkbox']").size() == $("#tbody input[type='checkbox']:checked").size()) {
+			if ($("#tbody input[type='checkbox']").size() === $("#tbody input[type='checkbox']:checked").size()) {
 				$("#checkAll").prop("checked", true)
 			} else {
 				$("#checkAll").prop("checked", false)
 			}
 		})
 
+
+		// 创建删除市场活动单件事件
+		$("#deleteActivitiesBtn").on("click", function () {
+			var check = $("#tbody input[type='checkbox']:checked");
+			if (check.length == 0) {
+				alert("请选择要删除的市场活动");
+				return;
+			}
+			if (window.confirm("你确定要删除吗？")) {
+				var ids = ""
+				$.each(check, function () {
+					ids += "id=" + this.value + "&"
+				})
+				ids = ids.substring(0, ids.length - 1);
+
+				$.ajax({
+					data:ids,
+					type: "post",
+					dataType: "json",
+					url: "workbench/activity/removeActivitiesByIds.do",
+					success: function (data) {
+						if (data.code == 0) {
+							alert("删除失败");
+						} else {
+							queryAllActivities(1, $("#activityPagination").bs_pagination('getOption', 'rowsPerPage'))
+						}
+
+					}
+
+				})
+			}
+		})
 	});
 
 	// 为市场活动主页加载数据的函数
@@ -414,7 +446,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" id = "createActivityBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 删除</button>
+				  <button type="button" class="btn btn-danger" id="deleteActivitiesBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
                     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal" ><span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）</button>
