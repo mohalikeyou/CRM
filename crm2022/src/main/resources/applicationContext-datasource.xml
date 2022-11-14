@@ -10,7 +10,7 @@
       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
 <!--    读取JDBC属性配置文件-->
-    <context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+    <context:property-placeholder location="classpath:jdbc.properties"/>
 
     <!-- 配置数据源 -->
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
@@ -28,7 +28,7 @@
         <!-- 如果mybatis没有特殊的配置(比如别名等)，configLocation可以省去 ;否则，不能省略-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <!-- 批量注册pojo别名-->
-        <property name="typeAliasesPackage" value="com.bjpowernode.crm.settings.domain"></property>
+        <property name="typeAliasesPackage" value="com.bjpowernode.crm.settings.domain"/>
     </bean>
 
 
