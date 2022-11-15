@@ -160,6 +160,75 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				})
 			}
 		})
+
+		// 为修改按钮添加单击事件
+		$("#editActivityBtn").on("click", function () {
+			var checkBoxList = $("#tbody input[type=checkbox]:checked");
+
+			if (checkBoxList.size() == 0) {
+				alert("请选择一个要修改市场活动")
+				return
+			}
+			if (checkBoxList.size() > 1) {
+				alert("请仅选择一个要修改的市场活动")
+				return
+			}
+
+			var id = checkBoxList.get(0).value; // 被选中的市场活动的id;
+
+			$.ajax({
+				url: "workbench/activity/selectActivityById.do",
+				type: "post",
+				data: {
+					id: id
+				},
+				dataType: "post",
+				success: function (data) {
+					$("#edit-id").val(data.id)
+					$("#edit-marketActivityOwner").val(data.owner)
+					$("#edit-marketActivityName").val(data.owner)
+					$("#edit-startDate").val(data.startDate)
+					$("#edit-endDate").val(data.endDate)
+					$("#edit-cost").val(data.cost)
+					$("#edit-description").val(data.description)
+
+					$("#editActivityModal").modal("show")
+				}
+			})
+		})
+
+		// 为修改市场活动模态窗口的更新添加单击事件！
+		$("#updateActivityBtn").on("click", function () {
+			var id = $("#edit-id").val();
+			var owner = $("#edit-marketActivityOwner").val();
+			var name = $("#edit-marketActivityName").val();
+			var startDate= $("#edit-startDate").val();
+			var endDate = $("#edit-endDate").val();
+			var cost = $("#edit-cost").val();
+			var description = $("#edit-description").val();
+
+			$.ajax({
+				url: "workbench/activity/updateActivityById.do",
+				type: "post",
+				data: {
+					id: id,
+					owner: owner,
+					name: name,
+					startDate: startDate,
+					endDate: endDate,
+					cost: cost,
+					description: description
+				},
+				success: function (data) {
+					if (data.code == 1) {
+						$("#editActivityModal").modal("hidden")
+						queryAllActivities(1, $("#activityPagination").bs_pagination('getOption', 'rowsPerPage'))
+					} else {
+						alert("系统忙，请重试！");
+					}
+				}
+			})
+		})
 	});
 
 	// 为市场活动主页加载数据的函数
@@ -306,7 +375,8 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				<div class="modal-body">
 				
 					<form class="form-horizontal" role="form">
-					
+
+						<input id="edit-id" type="hidden">
 						<div class="form-group">
 							<label for="edit-marketActivityOwner" class="col-sm-2 control-label">所有者<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
@@ -323,13 +393,13 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 						</div>
 
 						<div class="form-group">
-							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
+							<label for="edit-startDate" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+								<input type="text" class="form-control" id="edit-startDate" value="2020-10-10">
 							</div>
-							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
+							<label for="edit-endDate" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+								<input type="text" class="form-control" id="edit-endDate" value="2020-10-20">
 							</div>
 						</div>
 						
@@ -341,9 +411,9 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 						</div>
 						
 						<div class="form-group">
-							<label for="edit-describe" class="col-sm-2 control-label">描述</label>
+							<label for="edit-description" class="col-sm-2 control-label">描述</label>
 							<div class="col-sm-10" style="width: 81%;">
-								<textarea class="form-control" rows="3" id="edit-describe">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
+								<textarea class="form-control" rows="3" id="edit-description">市场活动Marketing，是指品牌主办或参与的展览会议与公关市场活动，包括自行主办的各类研讨会、客户交流会、演示会、新产品发布会、体验会、答谢会、年会和出席参加并布展或演讲的展览会、研讨会、行业交流会、颁奖典礼等</textarea>
 							</div>
 						</div>
 						
@@ -352,7 +422,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">更新</button>
+					<button type="button" class="btn btn-primary" id="updateActivityBtn">更新</button>
 				</div>
 			</div>
 		</div>
@@ -445,7 +515,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" id = "createActivityBtn"><span class="glyphicon glyphicon-plus"></span> 创建</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
+				  <button type="button" class="btn btn-default" id="editActivityBtn"><span class="glyphicon glyphicon-pencil"></span> 修改</button>
 				  <button type="button" class="btn btn-danger" id="deleteActivitiesBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">

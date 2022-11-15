@@ -15,4 +15,8 @@ public interface ActivityService {
     int queryCountOfActivitiesByConditions(Map<String, Object> map);
 
     int deleteActivitiesByIds(String[] ids);
+
+    Activity selectActivityById(String id);
+
+    int updateActivityById(Activity activity);
 }
