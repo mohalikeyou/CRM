@@ -229,6 +229,13 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				}
 			})
 		})
+
+		// 为批量导出按钮设置单击事件
+		$("#exportActivityAllBtn").on("click", function () {
+			if (window.confirm("你确定要下载吗？")) {
+				window.location.href = "workbench/activity/ExportActivitiesInBulk.do"
+			}
+		})
 	});
 
 	// 为市场活动主页加载数据的函数

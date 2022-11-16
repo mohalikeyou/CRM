@@ -74,4 +74,6 @@ public interface ActivityMapper {
     Activity selectActivityById(String id);
 
     int updateActivityById(Activity activity);
+
+    List<Activity> selectAllActivities();
 }

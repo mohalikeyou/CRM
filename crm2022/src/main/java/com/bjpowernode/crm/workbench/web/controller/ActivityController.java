@@ -8,13 +8,24 @@ import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.service.UserService;
 import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.service.ActivityService;
+import com.sun.xml.internal.ws.api.message.Attachment;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -129,5 +140,89 @@ public class ActivityController {
         }
 
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/ExportActivitiesInBulk.do")
+    public void ExportActivitiesInBulk(HttpServletResponse response) throws IOException {
+        List<Activity> activities = activityService.selectAllActivities();
+
+        try (HSSFWorkbook workbook = new HSSFWorkbook()) {// 创建xls格式的文件;
+            HSSFSheet sheet = workbook.createSheet("市场活动列表");
+            HSSFRow row = sheet.createRow(0);
+            // 设置文件头
+            HSSFCell cell = row.createCell(0);
+            cell.setCellValue("Id");
+            cell = row.createCell(1);
+            cell.setCellValue("Owner");
+            cell = row.createCell(2);
+            cell.setCellValue("name");
+            cell = row.createCell(3);
+            cell.setCellValue("start_date");
+            cell = row.createCell(4);
+            cell.setCellValue("end_date");
+            cell = row.createCell(5);
+            cell.setCellValue("cost");
+            cell = row.createCell(6);
+            cell.setCellValue("description");
+            cell = row.createCell(7);
+            cell.setCellValue("create_time");
+            cell = row.createCell(8);
+            cell.setCellValue("create_by");
+            cell = row.createCell(9);
+            cell.setCellValue("edit_time");
+            cell = row.createCell(10);
+            cell.setCellValue("edit_by");
+
+            if (activities != null && activities.size() > 0) {
+                for (int i = 0; i < activities.size(); ++i) { // 遍历活动列表写入数据;
+                    row = sheet.createRow(i + 1);
+                    Activity activity = activities.get(i);
+                    cell = row.createCell(0);
+                    cell.setCellValue(activity.getId());
+                    cell = row.createCell(1);
+                    cell.setCellValue(activity.getOwner());
+                    cell = row.createCell(2);
+                    cell.setCellValue(activity.getName());
+                    cell = row.createCell(3);
+                    cell.setCellValue(activity.getStartDate());
+                    cell = row.createCell(4);
+                    cell.setCellValue(activity.getEndDate());
+                    cell = row.createCell(5);
+                    cell.setCellValue(activity.getCost());
+                    cell = row.createCell(6);
+                    cell.setCellValue(activity.getDescription());
+                    cell = row.createCell(7);
+                    cell.setCellValue(activity.getCreateTime());
+                    cell = row.createCell(8);
+                    cell.setCellValue(activity.getCreateBy());
+                    cell = row.createCell(9);
+                    cell.setCellValue(activity.getEditTime());
+                    cell = row.createCell(10);
+                    cell.setCellValue(activity.getEditBy());
+                }
+
+            }
+
+            // 把数据写到硬盘中;
+            try (FileOutputStream outputStream = new FileOutputStream("d:\\syncfiles\\master2\\CRM-downLoadTest.xls")) {
+                workbook.write(outputStream);
+            }
+        }
+
+
+        // 把服务器端的文件发送给浏览器端;
+        response.setContentType("application/octet-stream;charset=UTF-8"); // 设置相应信息，是一个文件
+        response.addHeader("Content-Disposition", "attachment;filename=Activity.xls"); // 告诉浏览器下载窗口激活，并设置文件名：
+        // 把硬盘中的文件传给浏览器;
+        try (InputStream inputStream = Files.newInputStream(Paths.get("d:\\syncfiles\\master2\\CRM-downLoadTest.xls"))) {
+            OutputStream out = response.getOutputStream();
+            byte[] buffer = new byte[256];
+            int len = 0;
+            while ((len = inputStream.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+            }
+            out.flush();
+        }
+
     }
 }
