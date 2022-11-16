@@ -203,26 +203,14 @@ public class ActivityController {
 
             }
 
-            // 把数据写到硬盘中;
-            try (FileOutputStream outputStream = new FileOutputStream("d:\\syncfiles\\master2\\CRM-downLoadTest.xls")) {
-                workbook.write(outputStream);
-            }
-        }
-
-
         // 把服务器端的文件发送给浏览器端;
         response.setContentType("application/octet-stream;charset=UTF-8"); // 设置相应信息，是一个文件
         response.addHeader("Content-Disposition", "attachment;filename=Activity.xls"); // 告诉浏览器下载窗口激活，并设置文件名：
         // 把硬盘中的文件传给浏览器;
-        try (InputStream inputStream = Files.newInputStream(Paths.get("d:\\syncfiles\\master2\\CRM-downLoadTest.xls"))) {
-            OutputStream out = response.getOutputStream();
-            byte[] buffer = new byte[256];
-            int len = 0;
-            while ((len = inputStream.read(buffer)) != -1) {
-                out.write(buffer, 0, len);
-            }
-            out.flush();
-        }
 
+        OutputStream out = response.getOutputStream();
+        workbook.write(out);
+        out.flush();
+        }
     }
 }
