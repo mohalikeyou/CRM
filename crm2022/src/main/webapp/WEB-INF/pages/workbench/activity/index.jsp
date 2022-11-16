@@ -232,8 +232,25 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 
 		// 为批量导出按钮设置单击事件
 		$("#exportActivityAllBtn").on("click", function () {
-			if (window.confirm("你确定要下载吗？")) {
-				window.location.href = "workbench/activity/ExportActivitiesInBulk.do"
+			if (window.confirm("你确定要导出全部市场活动吗？")) {
+				window.location.href = "workbench/activity/ExportActivitiesInBulk.do?selected=false"
+			}
+		})
+
+		// 为批量导出已选择的市场活动设置单击事件
+		$("#exportActivityXzBtn").on("click", function () {
+			// 表单验证
+			var checkedList = $("#tbody input[type=checkbox]:checked");
+			if (checkedList.size() === 0) {
+				alert("请选择要导出的市场活动！")
+				return
+			}
+			if (window.confirm("你确定要导出已选择的市场活动吗？")) {
+				var ids = ""
+				$.each(checkedList, function () {
+					ids += "id=" + this.value + "&"
+				})
+				window.location.href="workbench/activity/ExportActivitiesInBulk.do?" + ids + "selected=true"
 			}
 		})
 	});

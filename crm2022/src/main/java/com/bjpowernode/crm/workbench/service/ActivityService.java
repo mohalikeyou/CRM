@@ -21,4 +21,6 @@ public interface ActivityService {
     int updateActivityById(Activity activity);
 
     List<Activity> selectAllActivities();
+
+    List<Activity> selectAllActivitiesByIds(String[] ids);
 }

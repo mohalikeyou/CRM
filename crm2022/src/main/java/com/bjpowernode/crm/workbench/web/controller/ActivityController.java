@@ -143,8 +143,14 @@ public class ActivityController {
     }
 
     @RequestMapping("/workbench/activity/ExportActivitiesInBulk.do")
-    public void ExportActivitiesInBulk(HttpServletResponse response) throws IOException {
-        List<Activity> activities = activityService.selectAllActivities();
+    public void ExportActivitiesInBulk(boolean selected, String[] id, HttpServletResponse response) throws IOException {
+        List<Activity> activities;
+        if (!selected) {
+            activities = activityService.selectAllActivities();
+        } else {
+            activities = activityService.selectAllActivitiesByIds(id);
+        }
+
 
         try (HSSFWorkbook workbook = new HSSFWorkbook()) {// 创建xls格式的文件;
             HSSFSheet sheet = workbook.createSheet("市场活动列表");

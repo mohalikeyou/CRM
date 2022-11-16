@@ -76,4 +76,7 @@ public interface ActivityMapper {
     int updateActivityById(Activity activity);
 
     List<Activity> selectAllActivities();
+
+    // 查询所有id的市场活动;
+    List<Activity> selectAllActivitiesByIds(String[] ids);
 }
