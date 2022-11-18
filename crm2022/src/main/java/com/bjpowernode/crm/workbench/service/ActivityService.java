@@ -23,4 +23,6 @@ public interface ActivityService {
     List<Activity> selectAllActivities();
 
     List<Activity> selectAllActivitiesByIds(String[] ids);
+
+    int saveAllActivitiesByList(List<Activity> activities);
 }

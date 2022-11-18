@@ -220,7 +220,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 					description: description
 				},
 				success: function (data) {
-					if (data.code == 1) {
+					if (data.code === 1) {
 						$("#editActivityModal").modal("hidden")
 						queryAllActivities(1, $("#activityPagination").bs_pagination('getOption', 'rowsPerPage'))
 					} else {
@@ -253,7 +253,51 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				window.location.href="workbench/activity/ExportActivitiesInBulk.do?" + ids + "selected=true"
 			}
 		})
-	});
+
+		// 为导入按钮添加单击事件
+		$("#importActivitiesInBulkBtn").on("click", function () {
+			$("#importActivityModal").modal("show")
+		})
+
+		// 为“导入模态窗口”的导入按钮添加单击事件！
+		$("#importActivityBtn").on("click", function () {
+			// 表单验证，判断上传的文件是否是.xls文件，且文件的大小不能超过5MB
+			var fileName = $("#activityFile").val(); // val方法只能获得文件的名字;
+			var extensionName = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length);
+			if (extensionName !== "xls") {
+				alert("请上传.xls文件！")
+				return
+			}
+			var file = $("#activityFile")[0].files[0];
+			// 验证文件大小
+			if (file.size > 5 * 1024 * 1024) {
+				alert("请勿上传大于5M的文件！")
+				return
+			}
+
+			var formData = new FormData();
+			formData.append("myfile", file)
+			// 发送请求;
+			$.ajax({
+				url: "workbench/activity/ImportActivitiesInBulk.do",
+				type: "post",
+				data: formData,
+				contentType: false,
+				processData: false,
+				dataType: "json",
+				success: function (data) {
+					if (data.code == 0) {
+						alert(data.message)
+						$("#importActivityModal").modal("show")
+					} else {
+						alert(data.message)
+						$("#importActivityModal").modal("hide")
+						queryAllActivities(1, $("#activityPagination").bs_pagination('getOption', 'rowsPerPage'))
+					}
+				}
+			})
+		})
+	})
 
 	// 为市场活动主页加载数据的函数
 	queryAllActivities = function (pageNo, pageSize) {
@@ -543,7 +587,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				  <button type="button" class="btn btn-danger" id="deleteActivitiesBtn"><span class="glyphicon glyphicon-minus"></span> 删除</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal" ><span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）</button>
+                    <button type="button" class="btn btn-default" id="importActivitiesInBulkBtn"><span class="glyphicon glyphicon-import"></span> 上传列表数据（导入）</button>
                     <button id="exportActivityAllBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 下载列表数据（批量导出）</button>
                     <button id="exportActivityXzBtn" type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 下载列表数据（选择导出）</button>
                 </div>
