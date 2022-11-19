@@ -8,6 +8,8 @@ import com.bjpowernode.crm.commons.utils.UUIDUtils;
 import com.bjpowernode.crm.settings.domain.User;
 import com.bjpowernode.crm.settings.service.UserService;
 import com.bjpowernode.crm.workbench.domain.Activity;
+import com.bjpowernode.crm.workbench.domain.ActivityRemark;
+import com.bjpowernode.crm.workbench.service.ActivityRemarkService;
 import com.bjpowernode.crm.workbench.service.ActivityService;
 import com.sun.xml.internal.ws.api.message.Attachment;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -39,6 +41,9 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private ActivityRemarkService activityRemarkService;
 
     @RequestMapping("/workbench/activity/index.do")
     public String index(HttpServletRequest request) {
@@ -273,5 +278,17 @@ public class ActivityController {
         }
 
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/queryActivityForDetail.do")
+    public String queryActivityForDetail(String id, HttpServletRequest request) {
+        Activity activity = activityService.queryActivityByIdForDetail(id);
+        List<ActivityRemark> activityRemarks = activityRemarkService.queryActivityRemarkByIdForDetail(id);
+
+        // 把数据放到请求域中;
+        request.setAttribute("activity", activity);
+        request.setAttribute("activityRemarks", activityRemarks);
+
+        return "workbench/activity/detail";
     }
 }

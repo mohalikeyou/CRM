@@ -9,7 +9,7 @@
     <!--<classPathEntry location="E://repository-p2p//mysql//mysql-connector-java//5.1.43//mysql-connector-java-5.1.43.jar"/>-->
 
     <!--导入属性配置-->
-    <properties resource="generator.properties"></properties>
+    <properties resource="generator.properties"/>
 
     <!--指定特定数据库的jdbc驱动jar包的位置-->
     <classPathEntry location="${jdbc.driverLocation}"/>
@@ -141,20 +141,21 @@
                        selectByExampleQueryId="false">
                 </table>
 
--->
+
                 <table tableName="tbl_activity" domainObjectName="Activity"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
-<!--
 
-                <table tableName="tbl_marketing_activities_remark" domainObjectName="MarketingActivitiesRemark"
+-->
+                <table tableName="tbl_activity_remark" domainObjectName="ActivityRemark"
                        enableCountByExample="false" enableUpdateByExample="false"
                        enableDeleteByExample="false" enableSelectByExample="false"
                        selectByExampleQueryId="false">
                 </table>
-                 -->
+
+
 
 <!--        <table tableName="tbl_transaction" domainObjectName="Transaction"-->
 <!--               enableCountByExample="false" enableUpdateByExample="false"-->

@@ -325,7 +325,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				$.each(data.activitiesList, function (index, obj) {
 					tbodystr += "<tr class=\"active\">"
 					tbodystr += "	<td><input type=\"checkbox\" value = \" "+ obj.id + "\"/></td> "
-					tbodystr += "	<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='detail.html';\">" + obj.name+ "</a></td>"
+					tbodystr += "	<td><a style=\"text-decoration: none; cursor: pointer;\" onclick=\"window.location.href='workbench/activity/queryActivityForDetail.do?id=" +obj.id+ "';\">" + obj.name+ "</a></td>"
 					tbodystr += "	<td>" +obj.owner+ "</td>"
 					tbodystr += "	<td>" + obj.startDate+ "</td>"
 					tbodystr += "	<td>" + obj.endDate+ "</td>"
@@ -606,14 +606,14 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 					<tbody id = "tbody">
 <%--						<tr class="active">--%>
 <%--							<td><input type="checkbox" /></td>--%>
-<%--							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>--%>
+<%--							<td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>--%>
 <%--                            <td>zhangsan</td>--%>
 <%--							<td>2020-10-10</td>--%>
 <%--							<td>2020-10-20</td>--%>
 <%--						</tr>--%>
 <%--                        <tr class="active">--%>
 <%--                            <td><input type="checkbox" /></td>--%>
-<%--                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.html';">发传单</a></td>--%>
+<%--                            <td><a style="text-decoration: none; cursor: pointer;" onclick="window.location.href='detail.jsp';">发传单</a></td>--%>
 <%--                            <td>zhangsan</td>--%>
 <%--                            <td>2020-10-10</td>--%>
 <%--                            <td>2020-10-20</td>--%>
