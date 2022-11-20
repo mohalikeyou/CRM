@@ -8,4 +8,7 @@ public class Constants {
 
     // 保存用户会话的信息常量;
     public static final String SESSION_USER = "sessionUser";
+
+    public static final String ACTIVITY_YES_EDITED = "1";
+    public static final String ACTIVITY_NO_EDITED = "0";
 }

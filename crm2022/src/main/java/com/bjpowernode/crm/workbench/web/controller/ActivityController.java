@@ -11,26 +11,20 @@ import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.domain.ActivityRemark;
 import com.bjpowernode.crm.workbench.service.ActivityRemarkService;
 import com.bjpowernode.crm.workbench.service.ActivityService;
-import com.sun.xml.internal.ws.api.message.Attachment;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Controller
@@ -290,5 +284,30 @@ public class ActivityController {
         request.setAttribute("activityRemarks", activityRemarks);
 
         return "workbench/activity/detail";
+    }
+    @RequestMapping("/workbench/activity/saveActivityRemark.do")
+    public @ResponseBody Object saveActivityRemark(ActivityRemark activityRemark, HttpSession session) {
+        User user = (User) (session.getAttribute(Constants.SESSION_USER));
+        activityRemark.setId(UUIDUtils.getUUID());
+        activityRemark.setCreateTime(DateUtils.formatDateTime(new Date()));
+        activityRemark.setCreateBy(user.getId());
+        activityRemark.setEditFlag(Constants.ACTIVITY_NO_EDITED);
+
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int code = activityRemarkService.saveActivityRemarkByActivityId(activityRemark);
+            if (code > 0) {
+                returnObject.setRetData(activityRemark);
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+                returnObject.setMessage("系统忙。。。。请稍后再试");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+            returnObject.setMessage("系统忙。。。。请稍后再试");
+        }
+        return returnObject;
     }
 }

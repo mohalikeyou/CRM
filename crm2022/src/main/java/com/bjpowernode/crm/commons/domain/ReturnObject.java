@@ -5,6 +5,16 @@ public class ReturnObject {
     private String code;
     private String message;
 
+    private Object retData;
+
+    public Object getRetData() {
+        return retData;
+    }
+
+    public void setRetData(Object retData) {
+        this.retData = retData;
+    }
+
     public String getCode() {
         return code;
     }

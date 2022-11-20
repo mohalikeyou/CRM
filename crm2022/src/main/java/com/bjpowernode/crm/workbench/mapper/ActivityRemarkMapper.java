@@ -58,4 +58,10 @@ public interface ActivityRemarkMapper {
      * @author yao
      */
     List<ActivityRemark> selectActivityRemarkByIdForDetail(String id);
+
+    /**
+     * 把remark保存到对应的市场活动下
+     * @author yao
+     */
+    int insertActivityRemarkByActivityId(ActivityRemark activityRemark);
 }

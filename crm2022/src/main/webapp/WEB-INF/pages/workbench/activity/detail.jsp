@@ -35,22 +35,89 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 			$("#remarkDiv").css("height","90px");
 			cancelAndSaveBtnDefault = true;
 		});
-		
-		$(".remarkDiv").mouseover(function(){
+
+		// 显示编辑和删除按钮（鼠标悬停事件），改造一下，给动态添加的备注也使用悬停事件！所以使用on的方式
+
+		$("#remarkParentDiv").on("mouseover", ".remarkDiv", function () {
 			$(this).children("div").children("div").show();
-		});
-		
-		$(".remarkDiv").mouseout(function(){
+		})
+		// $(".remarkDiv").on("mouseover", function () {
+		// 	$(this).children("div").children("div").show();
+		// })
+		// $(".remarkDiv").mouseover(function(){
+		// 	$(this).children("div").children("div").show();
+		// });
+
+		$("#remarkParentDiv").on("mouseout", ".remarkDiv", function () {
 			$(this).children("div").children("div").hide();
-		});
-		
-		$(".myHref").mouseover(function(){
+		})
+		// $(".remarkDiv").on("mouseout", function () {
+		// 	$(this).children("div").children("div").hide();
+		// })
+		// $(".remarkDiv").mouseout(function(){
+		// 	$(this).children("div").children("div").hide();
+		// });
+
+		$("#remarkParentDiv").on("mouseout", ".myHref", function () {
 			$(this).children("span").css("color","red");
-		});
-		
-		$(".myHref").mouseout(function(){
+		})
+		// $(".myHref").on("mouseover", function () {
+		// 	$(this).children("span").css("color","red");
+		// })
+		// $(".myHref").mouseover(function(){
+		// 	$(this).children("span").css("color","red");
+		// });
+		$("#remarkParentDiv").on("mouseout", ".myHref", function () {
 			$(this).children("span").css("color","#E6E6E6");
-		});
+		})
+		// $(".myHref").on("mouseout", function () {
+		// 	$(this).children("span").css("color","#E6E6E6");
+		// })
+		// $(".myHref").mouseout(function(){
+		// 	$(this).children("span").css("color","#E6E6E6");
+		// });
+
+		// 为保存活动备注添加单击事件
+		$("#saveActivityRemarkBtn").on("click", function () {
+			var noteContent = $("#remark").val().trim();
+			var activityId = "${activity.id}";
+
+			if (noteContent == "") {
+				alert("请输出备注内容！")
+				return
+			}
+			$.ajax({
+				url: "workbench/activity/saveActivityRemark.do",
+				data: {
+					noteContent : noteContent,
+					activityId : activityId
+				},
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					if (data.code == "0") {
+						alert(data.message)
+					} else {
+						$("#remark").val("") // 清空输入框
+						// 刷新备注列表
+						var htmlStr="";
+						htmlStr += "<div id=\"div_"+data.retData.id+"\" class=\"remarkDiv\" style=\"height: 60px;\">";
+						htmlStr += "<img title=\"${sessionScope.sessionUser.name}\" src=\"image/user-thumbnail.png\" style=\"width: 30px; height:30px;\">";
+						htmlStr += "<div style=\"position: relative; top: -40px; left: 40px;\" >";
+						htmlStr += "<h5>"+data.retData.noteContent+"</h5>";
+						htmlStr += "<font color=\"gray\">市场活动</font> <font color=\"gray\">-</font> <b>${activity.name}</b> <small style=\"color: gray;\"> "+data.retData.createTime+" 由${sessionScope.sessionUser.name}创建</small>";
+						htmlStr += "<div style=\"position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;\">";
+						htmlStr += "<a class=\"myHref\" name=\"editA\" remarkId=\""+data.retData.id+"\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-edit\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						htmlStr += "&nbsp;&nbsp;&nbsp;&nbsp;";
+						htmlStr += "<a class=\"myHref\" name=\"deleteA\" remarkId=\""+data.retData.id+"\" href=\"javascript:void(0);\"><span class=\"glyphicon glyphicon-remove\" style=\"font-size: 20px; color: #E6E6E6;\"></span></a>";
+						htmlStr += "</div>";
+						htmlStr += "</div>";
+						htmlStr += "</div>";
+						$("#remarkDiv").before(htmlStr)
+					}
+				}
+			})
+		})
 	});
 	
 </script>
@@ -154,7 +221,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 	</div>
 	
 	<!-- 备注 -->
-	<div style="position: relative; top: 30px; left: 40px;">
+	<div style="position: relative; top: 30px; left: 40px;" id="remarkParentDiv">
 		<div class="page-header">
 			<h4>备注</h4>
 		</div>
@@ -207,7 +274,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				<textarea id="remark" class="form-control" style="width: 850px; resize : none;" rows="2"  placeholder="添加备注..."></textarea>
 				<p id="cancelAndSaveBtn" style="position: relative;left: 737px; top: 10px; display: none;">
 					<button id="cancelBtn" type="button" class="btn btn-default">取消</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button type="button" class="btn btn-primary " id="saveActivityRemarkBtn">保存</button>
 				</p>
 			</form>
 		</div>
