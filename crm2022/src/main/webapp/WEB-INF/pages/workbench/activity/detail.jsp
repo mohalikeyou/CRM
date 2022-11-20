@@ -118,7 +118,28 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				}
 			})
 		})
-	});
+
+		// 为所有备注的删除按钮都添加删除事件（由于有些备注是动态的，所以要使用on函数！）
+		$("#remarkParentDiv").on("click", "a[name='deleteA']", function () {
+			var id = $(this).attr("remarkId")
+
+			$.ajax({
+				url: "workbench/activity/deleteActivityRemarkById.do",
+				data: {
+					id : id
+				},
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					if (data.code == "0") {
+						alert(data.message)
+ 					} else {
+						$("#div_" + id).remove();
+					}
+				}
+			})
+		})
+	})
 	
 </script>
 
@@ -227,15 +248,15 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 		</div>
 
 		<c:forEach items="${activityRemarks}" var="ar">
-			<div class="remarkDiv" style="height: 60px;">
+			<div class="remarkDiv" style="height: 60px;" id="div_${ar.id}">
 				<img title="${ar.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
 					<h5>${ar.noteContent}</h5>
 					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${ar.editFlag == "1" ? ar.editBy : ar.createBy} 由${ar.editFlag == "1" ? ar.editTime : ar.createTime} ${ar.editFlag == "1" ? "修改" : "创建"}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
-						<a class="myHref" remarkId="${ar.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="editA" remarkId="${ar.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<a class="myHref" remarkId="${ar.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
+						<a class="myHref" name="deleteA" remarkId="${ar.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>
 					</div>
 				</div>
 			</div>

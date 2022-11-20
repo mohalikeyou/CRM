@@ -11,6 +11,7 @@ import com.bjpowernode.crm.workbench.domain.Activity;
 import com.bjpowernode.crm.workbench.domain.ActivityRemark;
 import com.bjpowernode.crm.workbench.service.ActivityRemarkService;
 import com.bjpowernode.crm.workbench.service.ActivityService;
+import javafx.beans.binding.ObjectBinding;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -309,5 +310,24 @@ public class ActivityController {
             returnObject.setMessage("系统忙。。。。请稍后再试");
         }
         return returnObject;
+    }
+
+    @RequestMapping("/workbench/activity/deleteActivityRemarkById.do")
+    public @ResponseBody Object deleteActivityRemarkById(String id) {
+        ReturnObject object = new ReturnObject();
+        try {
+            int code = activityRemarkService.deleteActivityRemarkById(id);
+            if (code > 0) {
+                object.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+            } else {
+                object.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+                object.setMessage("系统忙。。。。。请稍后再试");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            object.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+            object.setMessage("系统忙。。。。。请稍后再试");
+        }
+       return object;
     }
 }
