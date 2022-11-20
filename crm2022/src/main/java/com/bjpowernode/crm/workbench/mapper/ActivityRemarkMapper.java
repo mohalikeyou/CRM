@@ -70,4 +70,10 @@ public interface ActivityRemarkMapper {
      * @author yao
      */
     int deleteActivityRemarkById(String id);
+
+    /**
+     * 根据活动备注ID更新备注
+     * @author yao
+     */
+    int updateActivityRemarkById(ActivityRemark activityRemark);
 }

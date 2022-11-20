@@ -330,4 +330,29 @@ public class ActivityController {
         }
        return object;
     }
+
+    @RequestMapping("/workbench/activity/editActivityRemarkById.do")
+    public @ResponseBody Object editActivityRemarkById(ActivityRemark activityRemark, HttpSession session) {
+        User user = (User) (session.getAttribute(Constants.SESSION_USER));
+        activityRemark.setEditTime(DateUtils.formatDateTime(new Date()));
+        activityRemark.setEditBy(user.getId());
+        activityRemark.setEditFlag(Constants.ACTIVITY_YES_EDITED);
+        ReturnObject returnObject = new ReturnObject();
+        try {
+            int code = activityRemarkService.updateActivityRemarkById(activityRemark);
+            if (code > 0) {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_SUCCESS);
+                returnObject.setMessage("设置成功！");
+                returnObject.setRetData(activityRemark);
+            } else {
+                returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+                returnObject.setMessage("系统正忙，请稍后。。。。。。");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returnObject.setCode(Constants.RETURN_OBJECT_CODE_FAILURE);
+            returnObject.setMessage("系统正忙，请稍后。。。。。。");
+        }
+        return returnObject;
+    }
 }

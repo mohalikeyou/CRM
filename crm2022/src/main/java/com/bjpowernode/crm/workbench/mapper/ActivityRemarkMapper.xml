@@ -186,4 +186,10 @@
     delete from tbl_activity_remark
     where id = #{id}
   </delete>
+
+<!--  int updateActivityRemarkById(ActivityRemark activityRemark);-->
+  <update id="updateActivityRemarkById" parameterType="com.bjpowernode.crm.workbench.domain.ActivityRemark">
+    update tbl_activity_remark set note_content=#{noteContent}, edit_time=#{editTime}, edit_by=#{editBy}, edit_flag=#{editFlag}
+    where id=#{id}
+  </update>
 </mapper>

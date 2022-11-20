@@ -139,6 +139,45 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				}
 			})
 		})
+
+		// 为每个活动备注的修改按钮添加单击事件(同样存在动态窗口)
+		$("#remarkParentDiv").on("click", "a[name='editA']", function () {
+			// 收集要显示的内容noteContent，以及在隐藏域中保存一个备注id;
+			var id = $(this).attr("remarkId");
+			$("#remarkId").val(id)
+			var noteContent = $("#div_" + id + " h5").text();
+			$("#noteContent").val(noteContent)
+			$("#editRemarkModal").modal("show")
+		})
+
+		// 为修改模态窗口中的更新按钮添加单击事件
+		$("#updateRemarkBtn").on("click", function () {
+			var id = $("#remarkId").val();
+			var noteContent = $("#noteContent").val();
+			if (noteContent == "") {
+				alert("备注内容不能为空")
+				return
+			}
+
+			$.ajax({
+				url: "workbench/activity/editActivityRemarkById.do",
+				data: {
+					id: id,
+					noteContent: noteContent
+				},
+				type: "post",
+				dataType: "json",
+				success: function (data) {
+					if (data.code == "0") {
+						alert(data.message)
+					} else {
+						$("#editRemarkModal").modal("hide")
+						$("#div_" + id + " h5").text(data.retData.noteContent)
+						$("#div_" + id + " small").text(" " + data.retData.editTime + " 由 ${sessionScope.sessionUser.name} 修改")
+					}
+				}
+			})
+		})
 	})
 	
 </script>
@@ -252,7 +291,7 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				<img title="${ar.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">
 				<div style="position: relative; top: -40px; left: 40px;" >
 					<h5>${ar.noteContent}</h5>
-					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${ar.editFlag == "1" ? ar.editBy : ar.createBy} 由${ar.editFlag == "1" ? ar.editTime : ar.createTime} ${ar.editFlag == "1" ? "修改" : "创建"}</small>
+					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${ar.editFlag == "1" ? ar.editTime : ar.createTime} 由 ${ar.editFlag == "1" ? ar.editBy : ar.createBy} ${ar.editFlag == "1" ? "修改" : "创建"}</small>
 					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">
 						<a class="myHref" name="editA" remarkId="${ar.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>
 						&nbsp;&nbsp;&nbsp;&nbsp;
@@ -261,6 +300,20 @@ String base = request.getScheme() + "://" + request.getServerName() + ":" + requ
 				</div>
 			</div>
 		</c:forEach>
+<%--		<c:forEach items="${activityRemarks}" var="remark">--%>
+<%--			<div id="div_${remark.id}" class="remarkDiv" style="height: 60px;">--%>
+<%--				<img title="${remark.createBy}" src="image/user-thumbnail.png" style="width: 30px; height:30px;">--%>
+<%--				<div style="position: relative; top: -40px; left: 40px;" >--%>
+<%--					<h5>${remark.noteContent}</h5>--%>
+<%--					<font color="gray">市场活动</font> <font color="gray">-</font> <b>${activity.name}</b> <small style="color: gray;"> ${remark.editFlag=='1'?remark.editTime:remark.createTime} 由${remark.editFlag=='1'?remark.editBy:remark.createBy}${remark.editFlag=='1'?'修改':'创建'}</small>--%>
+<%--					<div style="position: relative; left: 500px; top: -30px; height: 30px; width: 100px; display: none;">--%>
+<%--						<a class="myHref" name="editA" remarkId="${remark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-edit" style="font-size: 20px; color: #E6E6E6;"></span></a>--%>
+<%--						&nbsp;&nbsp;&nbsp;&nbsp;--%>
+<%--						<a class="myHref" name="deleteA" remarkId="${remark.id}" href="javascript:void(0);"><span class="glyphicon glyphicon-remove" style="font-size: 20px; color: #E6E6E6;"></span></a>--%>
+<%--					</div>--%>
+<%--				</div>--%>
+<%--			</div>--%>
+<%--		</c:forEach>--%>
 		
 <%--		<!-- 备注1 -->--%>
 <%--		<div class="remarkDiv" style="height: 60px;">--%>
